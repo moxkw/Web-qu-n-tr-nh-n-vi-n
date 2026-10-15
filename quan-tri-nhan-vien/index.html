@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quản trị nhân viên</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f4;--card:#fff;--ink:#14272e;--mute:#62767e;--line:#d9e2e6;--pri:#0f4c5c;--acc:#e09f3e;--ok:#2d7a4f;--bad:#b3392f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b20;--card:#172a31;--ink:#e6eef1;--mute:#93a8b0;--line:#27414a;--pri:#5fb3c7;--acc:#e8b062;--ok:#59b784;--bad:#e8776d}}
+:root[data-theme="dark"]{--bg:#0f1b20;--card:#172a31;--ink:#e6eef1;--mute:#93a8b0;--line:#27414a;--pri:#5fb3c7;--acc:#e8b062;--ok:#59b784;--bad:#e8776d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "Be Vietnam Pro",system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.btn{background:var(--pri);color:var(--bg);border:0;border-radius:6px;padding:7px 14px;font-weight:500}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:3px 9px;font-size:12px}
+.btn.bad{background:var(--bad);color:#fff}
+#login{max-width:340px;margin:12vh auto;background:var(--card);padding:28px;border:1px solid var(--line);border-radius:10px}
+#login h1{margin:0 0 4px;font-size:22px}
+label{display:block;margin:12px 0 4px;font-size:13px;color:var(--mute)}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.err{color:var(--bad);font-size:12px;min-height:16px}
+#app{display:none;min-height:100vh}
+aside{position:fixed;left:0;top:0;bottom:0;width:216px;background:var(--pri);color:#fff;padding:18px 10px;overflow:auto;transition:transform .2s;z-index:5}
+aside b{display:block;font-size:17px;padding:0 10px 14px}
+aside a{display:block;padding:9px 10px;border-radius:6px;color:#dcecf0;text-decoration:none;cursor:pointer}
+aside a.on{background:rgba(255,255,255,.16);color:#fff;font-weight:700}
+aside a.off{opacity:.45;cursor:default}
+main{margin-left:216px;padding:18px 22px 40px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+header h2{margin:0;font-size:20px;flex:1}
+#burger{display:none}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.kpi .n{font-size:28px;font-weight:700;color:var(--pri)}
+.kpi .l{color:var(--mute);font-size:13px}
+.two{display:grid;gap:14px;grid-template-columns:2fr 1fr}
+.bar{display:flex;align-items:center;gap:8px;margin:7px 0}
+.bar span:first-child{width:96px;color:var(--mute);font-size:13px}
+.bar i{display:block;height:14px;background:var(--acc);border-radius:3px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+input.ro{background:var(--bg);color:var(--mute);cursor:default}
+.tools input{max-width:240px}.tools select{width:auto}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--card)}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:500;color:var(--mute);cursor:pointer}
+.av{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--pri);color:var(--bg);font-size:11px;margin-right:8px;vertical-align:middle}
+.tag{padding:2px 8px;border-radius:10px;font-size:12px;border:1px solid currentColor}
+.t-ok{color:var(--ok)}.t-bad{color:var(--bad)}.t-wait{color:var(--acc)}.t-mute{color:var(--mute)}
+.pg{display:flex;gap:6px;align-items:center;margin-top:12px;color:var(--mute)}
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);width:min(460px,94vw)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+#toast{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+#toast.show{opacity:1}
+@media(max-width:1000px){aside{width:64px}aside a{font-size:0}aside a::first-letter{font-size:15px}aside b{font-size:0}aside b::first-letter{font-size:18px}main{margin-left:64px}.two{grid-template-columns:1fr}}
+@media(max-width:640px){aside{transform:translateX(-100%);width:216px}aside a{font-size:14px}aside b{font-size:17px}aside.open{transform:none}main{margin-left:0;padding:14px}#burger{display:block}.f2{grid-template-columns:1fr}}
+button:disabled{opacity:.5;cursor:default}
+.tools input[type=month]{max-width:170px}
+</style>
+</head>
+<body>
+<div id="login" style="display:none">
+  <h1>Quản trị nhân viên</h1>
+  <div style="color:var(--mute)">Đăng nhập bằng tài khoản Admin / Quản lý / Nhân viên</div>
+  <label for="u">Email hoặc tên đăng nhập</label><input id="u" value="admin" autocomplete="username">
+  <label for="p">Mật khẩu</label><input id="p" type="password" value="admin123" autocomplete="current-password">
+  <label style="display:flex;gap:6px;align-items:center"><input id="rm" type="checkbox" style="width:auto" checked> Ghi nhớ đăng nhập</label>
+  <div class="err" id="le"></div><a href="#" style="font-size:12px;color:var(--pri)" data-act="forgot">Quên mật khẩu?</a>
+  <button class="btn" style="width:100%" data-act="login">Đăng nhập</button>
+</div>
+
+<div id="app">
+<aside id="nav"></aside>
+<main>
+  <header><button class="btn ghost sm" id="burger" data-act="burger" aria-label="Mở menu">☰</button><h2 id="title"></h2><button class="btn ghost sm" id="bell" data-act="notif" aria-label="Thông báo">🔔</button><button class="btn ghost sm" data-act="logout">Đăng xuất</button></header>
+  <div id="view"></div>
+</main>
+</div>
+
+<dialog id="dlg"><form method="dialog" id="frm" onsubmit="return false">
+  <h3 id="dt" style="margin-top:0">Thêm nhân viên</h3>
+  <div class="f2">
+    <div><label for="f_id">Mã nhân viên *</label><input id="f_id" maxlength="20"></div>
+    <div><label for="f_name">Họ và tên *</label><input id="f_name" maxlength="100"></div>
+    <div><label for="f_email">Email *</label><input id="f_email" maxlength="150"></div>
+    <div><label for="f_phone">Số điện thoại *</label><input id="f_phone" maxlength="15"></div>
+    <div><label for="f_dep">Phòng ban *</label><select id="f_dep"></select></div>
+    <div><label for="f_pos">Chức vụ *</label><select id="f_pos"></select></div>
+    <div><label for="f_g">Giới tính</label><select id="f_g"><option>Nam</option><option>Nữ</option></select></div>
+    <div><label for="f_sal">Lương cơ bản (triệu)</label><input id="f_sal" type="number" min="0" step="0.5" value="15"></div>
+  </div>
+  <div class="f2" id="f_ct_box" style="margin-top:8px">
+    <div><label for="f_hire">Ngày vào làm</label><input id="f_hire" type="date"></div>
+    <div><label for="f_ctype">Loại hợp đồng</label><select id="f_ctype" data-chg="ctype"><option value="">— Chưa tạo hợp đồng —</option><option>Thử việc</option><option>Có thời hạn</option><option>Không thời hạn</option><option>Bán thời gian</option><option>Thực tập</option></select></div>
+    <div><label for="f_cend">Ngày kết thúc hợp đồng</label><input id="f_cend" type="date"></div>
+  </div>
+  <label id="f_acc_row" style="display:flex;gap:6px;align-items:center;margin-top:8px"><input id="f_acc" type="checkbox" style="width:auto"> Tạo tài khoản đăng nhập cho nhân viên này (tên đăng nhập = mã nhân viên)</label>
+  <div class="err" id="fe"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button class="btn ghost" type="button" data-act="closeDlg" data-d="dlg">Hủy</button><button class="btn" type="button" data-act="saveEmp">Lưu nhân viên</button></div>
+</form></dialog>
+
+<dialog id="ld"><form method="dialog" onsubmit="return false">
+  <h3 style="margin-top:0">Gửi đơn nghỉ phép</h3>
+  <label for="l_type">Loại nghỉ</label><select id="l_type"><option>Phép năm</option><option>Nghỉ ốm</option><option>Không lương</option></select>
+  <div class="f2"><div><label for="l_from">Từ ngày</label><input id="l_from" type="date"></div><div><label for="l_to">Đến ngày</label><input id="l_to" type="date"></div></div>
+  <label for="l_reason">Lý do</label><input id="l_reason" maxlength="255" value="Việc riêng">
+  <div class="err" id="le2"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button class="btn ghost" type="button" data-act="closeDlg" data-d="ld">Hủy</button><button class="btn" type="button" data-act="saveLeave">Gửi đơn</button></div>
+</form></dialog>
+
+<dialog id="nd"></dialog><dialog id="dd"></dialog>
+<div id="toast" role="status"></div>
+<script src="assets/app.js"></script>
+</body>
+</html>
